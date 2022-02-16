@@ -1,7 +1,6 @@
 " PLUGINS ---------------------------------------------------------------- {{{
 
 " Plugin code goes here.
-
 " }}}
 
 
@@ -64,7 +63,10 @@ set cursorline
 set cursorcolumn
 
 " Colours
+
+" Molokai
 colo molokai
 let g:molokai_original = 1
 
+"colo doom-one
 " }}}
