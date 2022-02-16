@@ -1,12 +1,13 @@
-Started using the terminal more, here are my current dotfiles
+Started using the terminal more, here are my current dotfiles for **vim** and **zsh**
 
-New method for dotfile storage:
-https://stegosaurusdormant.com/bare-git-repo/#fn:no-home-git-repo
+I'm using [this guide](https://mjones44.medium.com/storing-dotfiles-in-a-git-repository-53f765c0005d) (using the alias dotgit instead of config)
 
-Terminal colourscheme from:
-https://github.com/mbadolato/iTerm2-Color-Schemes
+Terminal colourscheme from [here](https://github.com/mbadolato/iTerm2-Color-Schemes)
 
-(Dimmed Monokai / Doom One)
+
+
+---
+(Dimmed Monokai)
                                                                                                 
 Old method:                                                                              
 - clone the repo to your home dir and symlink `.<dotfile>` using `ln -s ~/.dotfiles/<dotfile> ~/.<dotfile>` 
