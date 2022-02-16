@@ -120,3 +120,7 @@ source $ZSH/oh-my-zsh.sh
 # make sure the --git-dir is the same as the
 # directory where you created the repo above.
 alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+
+#Some aliases
+alias ls="exa --icons"
+alias -s txt=vim
