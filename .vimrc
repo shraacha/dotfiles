@@ -2,6 +2,17 @@
 
 
 " Plugin code goes here.
+" Plugins will be downloaded under the specified directory.
+call plug#begin('~/.vim/plugged')
+
+" Declare the list of plugins.
+
+Plug 'sainnhe/sonokai'
+Plug 'sheerun/vim-polyglot'
+
+" List ends here. Plugins become visible to Vim after this call.
+call plug#end()
+
 " }}}
 
 
@@ -66,8 +77,18 @@ set cursorcolumn
 " Colours
 
 " Molokai
-colo molokai
-let g:molokai_original = 1
+"colo molokai
+"let g:molokai_original = 1
 
-"colo doom-one
+" Important!!
+        if has('termguicolors')
+          set termguicolors
+        endif
+ 
+       " The configuration options should be placed before `colorscheme sonokai`.
+        let g:sonokai_style = 'shusia'
+        let g:sonokai_enable_italic = 0
+        let g:sonokai_disable_italic_comment = 1
+        colorscheme sonokai
+
 " }}}
