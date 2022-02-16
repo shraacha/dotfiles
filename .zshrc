@@ -124,3 +124,4 @@ alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 #Some aliases
 alias ls="exa --icons"
 alias -s txt=vim
+alias -s md=vim
