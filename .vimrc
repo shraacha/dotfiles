@@ -9,6 +9,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'sainnhe/sonokai'
 Plug 'sheerun/vim-polyglot'
+Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
