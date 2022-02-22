@@ -7,6 +7,9 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
 " Declare the list of plugins.
 
+" tree view
+Plug 'preservim/nerdtree'
+
 " Airline statusline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'

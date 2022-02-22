@@ -123,9 +123,13 @@ alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 
 #Some aliases
 alias ls="exa --icons"
-alias -s txt=vim
-alias -s md=vim
+alias -s txt=nvim
+alias -s md=nvim
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
+
+# Making the default terminal editor nvim
+export EDITOR="nvim"
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
