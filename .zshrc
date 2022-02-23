@@ -116,6 +116,10 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+
+
+
+
 #DOTFILES stuff
 # make sure the --git-dir is the same as the
 # directory where you created the repo above.
@@ -125,10 +129,17 @@ alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 alias ls="exa --icons"
 alias -s txt=nvim
 alias -s md=nvim
+alias cs="cd Documents/1B/CS146"
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
+
+
 
 # Making the default terminal editor nvim
 export EDITOR="nvim"
+
+
+
+
 
 
 # >>> conda initialize >>>
@@ -136,7 +147,6 @@ export EDITOR="nvim"
 __conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
-else
     if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
         . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
     else

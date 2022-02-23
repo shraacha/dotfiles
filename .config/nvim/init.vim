@@ -7,6 +7,16 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
 " Declare the list of plugins.
 
+" Racket REPL
+Plug 'Olical/conjure'
+
+" Racket auto-detection, indentation, and syntax highlighting
+Plug 'wlangstroth/vim-racket'
+
+" Autocomplete 'n more
+" Use release branch (recommend)
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 " tree view
 Plug 'preservim/nerdtree'
 
@@ -33,7 +43,14 @@ call plug#end()
 " MAPPINGS --------------------------------------------------------------- {{{
 
 " Mappings code goes here.
+" NERDTree remaps
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 
+" Start NERDTree and put the cursor back in the other window.
+autocmd VimEnter * NERDTree | wincmd p
 " }}}
 
 
@@ -82,7 +99,10 @@ set cursorcolumn                              " Highlight cursor line underneath
 set title                                     " Show file title
 
 set wildmenu                                  " Show a more advance menu
+  
+set expandtab                                 " No tabs! 
 
+set splitbelow                                " Split below
 " }}}
 
 
