@@ -132,7 +132,8 @@ alias -s md=nvim
 alias cs="cd Documents/1B/CS146"
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 
-
+#GCC (for CS146)
+alias gcc="gcc-11"
 
 # Making the default terminal editor nvim
 export EDITOR="nvim"

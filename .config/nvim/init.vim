@@ -7,9 +7,6 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
 " Declare the list of plugins.
 
-" Racket REPL
-Plug 'Olical/conjure'
-
 " Racket auto-detection, indentation, and syntax highlighting
 Plug 'wlangstroth/vim-racket'
 
@@ -49,8 +46,6 @@ nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
-" Start NERDTree and put the cursor back in the other window.
-autocmd VimEnter * NERDTree | wincmd p
 " }}}
 
 
@@ -69,6 +64,21 @@ augroup END
 " STATUS LINE ------------------------------------------------------------ {{{
 
 " Status bar code goes here.
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+" powerline symbols
+  let g:airline_left_sep = ''
+  let g:airline_left_alt_sep = ''
+  let g:airline_right_sep = ''
+  let g:airline_right_alt_sep = ''
+  let g:airline_symbols.branch = ''
+  let g:airline_symbols.colnr = ' :'
+  let g:airline_symbols.readonly = ''
+  let g:airline_symbols.linenr = ' :'
+  let g:airline_symbols.maxlinenr = '☰ '
+  let g:airline_symbols.dirty='⚡'
 
 " }}}
 
@@ -76,33 +86,21 @@ augroup END
 " MISC ------------------------------------------------------------------ {{{
 
 
-set nocompatible                              " Disable compatibility with vi which can cause unexpected issues.
-
-filetype on                                   " Enable type file detection. Vim will be able to try to detect the type of file in use.
-
-filetype plugin on                            " Enable plugins and load plugin for the detected file type.
-
-filetype indent on                            " Load an indent file for the detected file type.
-
-syntax on                                     " Turn syntax highlighting on.
-
-set number relativenumber                     " Add numbers to each line on the left-hand side.
-
-set cursorline                                " Highlight cursor line underneath the cursor horizontally.
-
-set cursorcolumn                              " Highlight cursor line underneath the cursor vertically.
-
-set cursorline                                " Highlight cursor line underneath the cursor horizontally.
-
-set cursorcolumn                              " Highlight cursor line underneath the cursor vertically.
-
-set title                                     " Show file title
-
-set wildmenu                                  " Show a more advance menu
-  
-set expandtab                                 " No tabs! 
-
-set splitbelow                                " Split below
+set nocompatible             " Disable compatibility with vi which can cause unexpected issues.
+filetype on                  " Enable type file detection. Vim will be able to try to detect the type of file in use.
+filetype plugin on           " Enable plugins and load plugin for the detected file type.
+filetype indent on           " Load an indent file for the detected file type.
+syntax on                    " Turn syntax highlighting on.
+set number relativenumber    " Add numbers to each line on the left-hand side.
+set cursorline               " Highlight cursor line underneath the cursor horizontally.
+set cursorcolumn             " Highlight cursor line underneath the cursor vertically.
+set cursorline               " Highlight cursor line underneath the cursor horizontally.
+set cursorcolumn             " Highlight cursor line underneath the cursor vertically.
+set title                    " Show file title
+set wildmenu                 " Show a more advance menu
+set expandtab                " No tabs! 
+set splitbelow               " Split below
+set mouse=a                  " enable mouse
 " }}}
 
 
