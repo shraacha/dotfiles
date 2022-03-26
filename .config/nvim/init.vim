@@ -29,7 +29,10 @@ Plug 'sheerun/vim-polyglot'
 " Paper theme
 Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
 " Monokai pro alternative theme
-Plug 'sainnhe/sonokai'
+"Plug 'sainnhe/sonokai'
+" Edge theme
+Plug 'sainnhe/edge'
+
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -45,6 +48,10 @@ nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
+
+:command Light :set background=light | :AirlineTheme edge
+:command Dark :set background=dark | :AirlineTheme edge
+
 
 " }}}
 
@@ -114,12 +121,19 @@ set mouse=a                  " enable mouse
         if has('termguicolors')
           set termguicolors
         endif
- 
-       " The configuration options should be placed before `colorscheme sonokai`.
-        let g:sonokai_style = 'andromeda'
-        let g:sonokai_enable_italic = 0
-        let g:sonokai_disable_italic_comment = 1
-        let g:airline_theme = 'sonokai'
-        colorscheme sonokai
+
+        " The configuration options should be placed before `colorscheme edge`.
+        let g:edge_style = 'neon'
+        let g:edge_enable_italic = 0
+        let g:edge_disable_italic_comment = 1
+        let g:airline_theme = 'edge'
+        colorscheme edge
+       
+        " The configuration options should be placed before `colorscheme sonokai`.
+"        let g:sonokai_style = 'andromeda'
+"        let g:sonokai_enable_italic = 0
+"        let g:sonokai_disable_italic_comment = 1
+"        let g:airline_theme = 'sonokai'
+"        colorscheme sonokai
 
 " }}}

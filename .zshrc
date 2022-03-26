@@ -129,7 +129,7 @@ alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 alias ls="exa --icons"
 alias -s txt=nvim
 alias -s md=nvim
-alias cs="cd Documents/1B/CS146"
+alias cs="cd ~/Documents/1B/CS146"
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 
 #GCC (for CS146)
