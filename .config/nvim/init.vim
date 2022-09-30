@@ -24,7 +24,6 @@ Plug 'vim-airline/vim-airline-themes'
 " Better Syntax Support
 Plug 'sheerun/vim-polyglot'
 
-
 " Themes:
 " Paper theme
 Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
@@ -32,6 +31,12 @@ Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
 "Plug 'sainnhe/sonokai'
 " Edge theme
 Plug 'sainnhe/edge'
+
+Plug 'folke/tokyonight.nvim' "tokyonight theme
+
+Plug 'lervag/vimtex' "vimtex
+
+Plug 'github/copilot.vim' " copilot
 
 
 " List ends here. Plugins become visible to Vim after this call.
@@ -48,6 +53,19 @@ nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
+
+" resize window CTRL+(h|j|k|l)
+nnoremap <C-j> :resize +1<CR>
+nnoremap <C-k> :resize -1<CR>
+nnoremap <C-h> :vertical resize -1<CR>
+nnoremap <C-l> :vertical resize +1<CR>
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+" doom inspired
+nmap <leader> hr <Plug>(coc-rename)
 
 :command Light :set background=light | :AirlineTheme edge
 :command Dark :set background=dark | :AirlineTheme edge
@@ -108,6 +126,7 @@ set wildmenu                 " Show a more advance menu
 set expandtab                " No tabs! 
 set splitbelow               " Split below
 set mouse=a                  " enable mouse
+set clipboard=unnamedplus    " using system clipboard
 " }}}
 
 
@@ -117,6 +136,10 @@ set mouse=a                  " enable mouse
 "colo molokai
 "let g:molokai_original = 1
 
+"let g:tokyonight_style = 'storm'
+"colorscheme tokyonight
+
+"edge theme, the daily
 " Important!!
         if has('termguicolors')
           set termguicolors
@@ -124,11 +147,13 @@ set mouse=a                  " enable mouse
 
         " The configuration options should be placed before `colorscheme edge`.
         let g:edge_style = 'neon'
-        let g:edge_enable_italic = 0
-        let g:edge_disable_italic_comment = 1
+        let g:edge_enable_italic = 1
+        let g:edge_disable_italic_comment = 0
         let g:airline_theme = 'edge'
         colorscheme edge
-       
+
+
+" sonokai theme
         " The configuration options should be placed before `colorscheme sonokai`.
 "        let g:sonokai_style = 'andromeda'
 "        let g:sonokai_enable_italic = 0

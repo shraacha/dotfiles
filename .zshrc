@@ -52,7 +52,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+ ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 # You can also set it to another string to have that shown instead of the default red dots.
@@ -129,16 +129,20 @@ alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 alias ls="exa --icons"
 alias -s txt=nvim
 alias -s md=nvim
-alias cs="cd ~/Documents/1B/CS146"
+alias cs="cd ~/Documents/school/cs-courses"
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 
-#GCC (for CS146)
-alias gcc="gcc-11"
+#GCC (for cs146)
+#alias gcc="gcc-11"
+
+#Gpp (for cs246)
+alias g++14="g++ -std=c++14 -Wall -g"
 
 # Making the default terminal editor nvim
 export EDITOR="nvim"
 
-
+# EMACS client nw
+alias ec="emacsclient -nw"
 
 
 
@@ -157,3 +161,14 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Spicetify
+export PATH=$PATH:/Users/anish/.spicetify
+
+
+# Doom Emacs
+export PATH="$HOME/.emacs.d/bin:$PATH"
