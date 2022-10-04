@@ -52,3 +52,5 @@
 (package! org-modern) ;;  faster org-prettification
 
 (package! visual-fill-column) ;; org centering stuff
+
+(package! engrave-faces)

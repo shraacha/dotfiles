@@ -3,11 +3,10 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
-(setq user-full-name "John Doe"
-      user-mail-address "john@doe.com")
+(setq user-full-name "Anish Racharla"
+      user-mail-address "racharlaanish@gmail.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
@@ -33,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-machine)
+(setq doom-theme 'doom-henna)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -88,7 +87,7 @@
   (setq doom-themes-treemacs-theme "doom-colors")
   )
 
-;; org-modern
+;; org mode stuff
 (use-package! org-modern
   :hook (org-mode . org-modern-mode)
   :config
@@ -105,7 +104,45 @@
 
 (use-package! org
   :hook (org-mode . dw/org-mode-setup)
+  :config
+  (setq org-src-fontify-natively t)
+  (setq org-latex-src-block-backend 'engraved)
+  ;; makes latex preview bigger
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+  ;; lualatex preview
+  (setq org-latex-pdf-process
+        '("lualatex -shell-escape -interaction nonstopmode %f"
+          "lualatex -shell-escape -interaction nonstopmode %f"))
+
+  ;;; stolen from somewhere🤷
+  (setq luamagick '(luamagick :programs ("lualatex" "convert")
+                              :description "pdf > png"
+                              :message "you need to install lualatex and imagemagick."
+                              :use-xcolor t
+                              :image-input-type "pdf"
+                              :image-output-type "png"
+                              :image-size-adjust (1.0 . 1.0)
+                              :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+                              :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+
+  (add-to-list 'org-preview-latex-process-alist luamagick)
+  (setq org-preview-latex-default-process 'luamagick) ;; lowkey no idea
 )
 
-; lsp stuff
+;; spices up latex code blocks
+(use-package! engrave-faces-latex
+  :after ox-latex
+  :config
+  (add-to-list 'org-latex-engraved-options '("linenos" "true"))
+  ;; (setq org-latex-engraved-theme "t") REVIEW: doesn't work atm
+)
+
+;; orderless
+(use-package! orderless
+  :defer t
+  :config
+(setq orderless-component-separator #'orderless-escapable-split-on-space)
+)
+
+; lsp stuff - don't work
 ; (setq flycheck-gcc-language-standard "c++20") ; did not work: still getting some irrellevant c++11 warnings

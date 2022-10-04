@@ -119,8 +119,6 @@ syntax on                    " Turn syntax highlighting on.
 set number relativenumber    " Add numbers to each line on the left-hand side.
 set cursorline               " Highlight cursor line underneath the cursor horizontally.
 set cursorcolumn             " Highlight cursor line underneath the cursor vertically.
-set cursorline               " Highlight cursor line underneath the cursor horizontally.
-set cursorcolumn             " Highlight cursor line underneath the cursor vertically.
 set title                    " Show file title
 set wildmenu                 " Show a more advance menu
 set expandtab                " No tabs! 
