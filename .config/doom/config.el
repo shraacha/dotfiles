@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-henna)
+(setq doom-theme 'doom-tomorrow-night)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -87,11 +87,13 @@
   (setq doom-themes-treemacs-theme "doom-colors")
   )
 
-;; org mode stuff
+;; ~~ BEGINNING of org stuff ~~
 (use-package! org-modern
   :hook (org-mode . org-modern-mode)
   :config
   (setq org-modern-todo nil)
+  (setq org-modern-checkbox nil)
+  (setq org-modern-todo-faces nil)
 )
 
 (defun dw/org-mode-setup ()
@@ -105,6 +107,7 @@
 (use-package! org
   :hook (org-mode . dw/org-mode-setup)
   :config
+  (setq org-ellipsis " ▾")
   (setq org-src-fontify-natively t)
   (setq org-latex-src-block-backend 'engraved)
   ;; makes latex preview bigger
@@ -129,20 +132,111 @@
   (setq org-preview-latex-default-process 'luamagick) ;; lowkey no idea
 )
 
+; agenda stuff
+(use-package! org-agenda
+  :defer t
+  :config
+  ;; copied from prot
+  ;; https://protesilaos.com/codelog/2021-12-09-emacs-org-block-agenda/
+  (setq org-agenda-custom-commands
+        `(("A" "Daily agenda and top priority tasks"
+           ((tags-todo "*"
+                       ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
+                        (org-agenda-skip-function
+                         `(org-agenda-skip-entry-if
+                           'notregexp ,(format "\\[#%s\\]" (char-to-string org-priority-highest))))
+                        (org-agenda-block-separator nil)
+                        (org-agenda-overriding-header "Important tasks without a date\n")))
+            (agenda "" ((org-agenda-overriding-header "Overdue")
+                        (org-agenda-time-grid nil)
+                        (org-agenda-start-on-weekday nil)
+                        (org-agenda-show-all-dates nil)
+                        (org-agenda-format-date "")  ;; Skip the date
+                        (org-agenda-span 1)
+                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                        (org-agenda-entry-types '(:deadline :scheduled))
+                        (org-scheduled-past-days 999)
+                        (org-deadline-past-days 999)
+                        (org-deadline-warning-days 0)))
+            (agenda "" ((org-agenda-overriding-header "\nToday's agenda\n")
+                        (org-agenda-start-day "0d")
+                        (org-agenda-span 1)
+                        (org-deadline-warning-days 0)
+                        (org-agenda-block-separator nil)
+                        (org-scheduled-past-days 0)
+                        ;; We don't need the `org-agenda-date-today'
+                        ;; highlight because that only has a practical
+                        ;; utility in multi-day views.
+                        (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
+                        (org-agenda-format-date "%A %-e %B %Y")))
+            (agenda "" ((org-agenda-overriding-header "\nNext seven days\n")
+                        (org-agenda-start-on-weekday nil)
+                        (org-agenda-start-day "+1d")
+                        (org-agenda-span 7)
+                        (org-deadline-warning-days 0)
+                        (org-agenda-block-separator nil)
+                                        ;(org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;; skips if the TODO keyword marks a DONE state
+                        ))
+            (agenda "" ((org-agenda-overriding-header "\nUpcoming Deadlines/Schedules (+14d)\n")
+                        (org-agenda-time-grid nil)
+                        (org-agenda-start-on-weekday nil)
+                        ;; We don't want to replicate the previous section's
+                        ;; three days, so we start counting from the day after.
+                        (org-agenda-start-day "+4d")
+                        (org-agenda-span 14)
+                        (org-agenda-show-all-dates nil)
+                        (org-deadline-warning-days 0)
+                        (org-agenda-block-separator nil)
+                        (org-agenda-entry-types '(:deadline :scheduled))
+                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)))))))))
+
+;; ~~ END of org stuff ~~
+
 ;; spices up latex code blocks
 (use-package! engrave-faces-latex
   :after ox-latex
   :config
   (add-to-list 'org-latex-engraved-options '("linenos" "true"))
   ;; (setq org-latex-engraved-theme "t") REVIEW: doesn't work atm
-)
+  )
 
 ;; orderless
 (use-package! orderless
   :defer t
   :config
-(setq orderless-component-separator #'orderless-escapable-split-on-space)
-)
+  (setq orderless-component-separator #'orderless-escapable-split-on-space)
+  )
 
-; lsp stuff - don't work
-; (setq flycheck-gcc-language-standard "c++20") ; did not work: still getting some irrellevant c++11 warnings
+;; latex preview pane
+(require 'latex-preview-pane)
+(latex-preview-pane-enable)
+
+;; lsp stuff
+;; (setq flycheck-gcc-language-standard "c++20") ; did not work: still getting some irrellevant c++11 warnings
+(use-package! cpp-mode
+  :defer t
+  :config
+  (add-to-list 'lsp-clients-clangd-args "-std=c++14")
+  )
+
+;; elcord for discord rich presesce
+;; (require 'elcord)
+;; (elcord-mode)
+
+;; hydra for windows stuff
+(defhydra doom-window-resize-hydra (:hint nil)
+  "
+             _k_ increase height
+_h_ decrease width    _l_ increase width
+             _j_ decrease height
+"
+  ("h" evil-window-decrease-width)
+  ("j" evil-window-increase-height)
+  ("k" evil-window-decrease-height)
+  ("l" evil-window-increase-width)
+
+  ("q" nil))
+
+(map!
+ (:prefix "w"
+  :desc "Hydra resize" :n "SPC" #'doom-window-resize-hydra/body))

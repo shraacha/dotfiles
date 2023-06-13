@@ -169,6 +169,7 @@ export NVM_DIR="$HOME/.nvm"
 # Spicetify
 export PATH=$PATH:/Users/anish/.spicetify
 
-
 # Doom Emacs
 export PATH="$HOME/.emacs.d/bin:$PATH"
+
+

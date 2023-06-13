@@ -1,50 +1,29 @@
 " PLUGINS ---------------------------------------------------------------- {{{
 
-
 " Plugin code goes here.
 " Plugins will be downloaded under the specified directory.
 call plug#begin('~/.config/nvim/autoload/plugged')
 
-" Declare the list of plugins.
-
-" Racket auto-detection, indentation, and syntax highlighting
-Plug 'wlangstroth/vim-racket'
-
-" Autocomplete 'n more
-" Use release branch (recommend)
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" tree view
-Plug 'preservim/nerdtree'
-
-" Airline statusline
-Plug 'vim-airline/vim-airline'
+" Misc:
+Plug 'wlangstroth/vim-racket'                   " Racket auto-detection, indentation, and syntax highlighting
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " Autocomplete 'n more (Use release branch (recommended) )
+Plug 'preservim/nerdtree'                       " Tree view
+Plug 'vim-airline/vim-airline'                  " Airline statusline
 Plug 'vim-airline/vim-airline-themes'
-
-" Better Syntax Support
-Plug 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'                     " Better Syntax Support
+Plug 'lervag/vimtex'                            " vimtex
+" Plug 'github/copilot.vim'                      copilot
 
 " Themes:
-" Paper theme
-Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
-" Monokai pro alternative theme
-"Plug 'sainnhe/sonokai'
-" Edge theme
-Plug 'sainnhe/edge'
-
-Plug 'folke/tokyonight.nvim' "tokyonight theme
-
-Plug 'lervag/vimtex' "vimtex
-
-Plug 'github/copilot.vim' " copilot
-
+Plug 'https://gitlab.com/yorickpeterse/vim-paper.git' " Paper theme
+"Plug 'sainnhe/sonokai'                                Monokai pro alternative theme
+Plug 'sainnhe/edge'                                   " Edge theme
+Plug 'folke/tokyonight.nvim'                          " Tokyonight theme
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 
 " }}}
-
-
 " MAPPINGS --------------------------------------------------------------- {{{
 
 " Mappings code goes here.
@@ -67,13 +46,7 @@ nmap <silent> gr <Plug>(coc-references)
 " doom inspired
 nmap <leader> hr <Plug>(coc-rename)
 
-:command Light :set background=light | :AirlineTheme edge
-:command Dark :set background=dark | :AirlineTheme edge
-
-
 " }}}
-
-
 " VIMSCRIPT -------------------------------------------------------------- {{{
 
 " This will enable code folding.
@@ -84,8 +57,6 @@ augroup filetype_vim
 augroup END
 
 " }}}
-
-
 " STATUS LINE ------------------------------------------------------------ {{{
 
 " Status bar code goes here.
@@ -105,12 +76,11 @@ endif
   let g:airline_symbols.maxlinenr = '☰ '
   let g:airline_symbols.dirty='⚡'
 
+:command Light :set background=light | :AirlineTheme edge
+:command Dark :set background=dark | :AirlineTheme edge
+
 " }}}
-
-
 " MISC ------------------------------------------------------------------ {{{
-
-
 set nocompatible             " Disable compatibility with vi which can cause unexpected issues.
 filetype on                  " Enable type file detection. Vim will be able to try to detect the type of file in use.
 filetype plugin on           " Enable plugins and load plugin for the detected file type.
@@ -124,10 +94,8 @@ set wildmenu                 " Show a more advance menu
 set expandtab                " No tabs! 
 set splitbelow               " Split below
 set mouse=a                  " enable mouse
-set clipboard=unnamedplus    " using system clipboard
+
 " }}}
-
-
 " COLOURS ------------------------------------------------------------------ {{{
 
 " Molokai
