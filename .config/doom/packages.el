@@ -54,3 +54,6 @@
 (package! visual-fill-column) ;; org centering stuff
 
 (package! engrave-faces)
+
+(package! modus-themes)
+(package! ef-themes)

@@ -126,7 +126,7 @@ source $ZSH/oh-my-zsh.sh
 alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 
 #Some aliases
-alias ls="exa --icons"
+alias ls="eza --icons"
 alias -s txt=nvim
 alias -s md=nvim
 alias cs="cd ~/Documents/school/cs-courses"
@@ -172,4 +172,4 @@ export PATH=$PATH:/Users/anish/.spicetify
 # Doom Emacs
 export PATH="$HOME/.emacs.d/bin:$PATH"
 
-
+# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)

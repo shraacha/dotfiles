@@ -29,10 +29,12 @@
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 (setq doom-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 15 :weight 'regular))
 
+(setq doom-unicode-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 15 :weight 'regular))
+
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-tomorrow-night)
+(setq doom-theme 'ef-bio)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -78,6 +80,48 @@
 ;; fullscreen on startup
 (add-to-list 'default-frame-alist `(fullscreen . maximized))
 
+;; modus stuff
+(setq modus-themes-bold-constructs t)
+
+;; from https://protesilaos.com/emacs/modus-themes#h:df1199d8-eaba-47db-805d-6b568a577bf3
+(setq modus-themes-common-palette-overrides
+      '(
+        ;; colours for the modeline
+        (bg-mode-line-active bg-blue-subtle)
+        (fg-mode-line-active fg-main)
+        (border-mode-line-active bg-blue-subtle)
+
+        ;; makes highlighting background less dark
+        (bg-region bg-dim)
+
+        ;; makes highlighting still show colour
+        (fg-region unspecified)
+
+        ;; intense (more contrast) numbers for line numbers
+        (fg-line-number-inactive fg-main)
+        (fg-line-number-active fg-main)
+
+        ;; invisible background for line numbers
+        (bg-line-number-inactive unspecified)
+        (bg-line-number-active unspecified)
+
+        ;; invisible fringe:
+        (fringe unspecified)
+        ))
+
+;; gives org-mode blocks a coloured background
+(setq modus-themes-org-blocks 'tinted-background)
+
+;; make every background pitch black
+(setq modus-vivendi-tritanopia-palette-overrides
+      '(
+        ;; (bg-dim  "#000000")  ; default is #f8f8f8
+        ;; (bg-alt  "#000000")  ; default is #f0f0f0
+        (comment fg-dim)
+        ))
+
+
+
 ;; treemacs
 (use-package! treemacs
   :defer t
@@ -117,7 +161,7 @@
         '("lualatex -shell-escape -interaction nonstopmode %f"
           "lualatex -shell-escape -interaction nonstopmode %f"))
 
-  ;;; stolen from somewhere🤷
+  ;;; stolen from somewhere
   (setq luamagick '(luamagick :programs ("lualatex" "convert")
                               :description "pdf > png"
                               :message "you need to install lualatex and imagemagick."
@@ -238,5 +282,13 @@ _h_ decrease width    _l_ increase width
   ("q" nil))
 
 (map!
- (:prefix "w"
-  :desc "Hydra resize" :n "SPC" #'doom-window-resize-hydra/body))
+      (:prefix "w"
+       :desc "Hydra resize" :n "SPC" #'doom-window-resize-hydra/body))
+
+(use-package! doom-modeline
+  :defer t
+  :config
+  (display-time-mode 1)
+  ;; (setq doom-modeline-time-icon nil)
+  (setq doom-modeline-height 37)
+  )
