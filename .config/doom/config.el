@@ -27,9 +27,9 @@
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
-(setq doom-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 15 :weight 'regular))
+(setq doom-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 13 :weight 'regular))
 
-(setq doom-unicode-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 15 :weight 'regular))
+(setq doom-unicode-font (font-spec :name "JetBrainsMono Nerd Font Mono" :size 13 :weight 'regular))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -80,6 +80,7 @@
 ;; fullscreen on startup
 (add-to-list 'default-frame-alist `(fullscreen . maximized))
 
+;; theme stuff
 ;; modus stuff
 (setq modus-themes-bold-constructs t)
 
@@ -112,14 +113,37 @@
 ;; gives org-mode blocks a coloured background
 (setq modus-themes-org-blocks 'tinted-background)
 
-;; make every background pitch black
 (setq modus-vivendi-tritanopia-palette-overrides
       '(
+        ;; make every background pitch black
         ;; (bg-dim  "#000000")  ; default is #f8f8f8
         ;; (bg-alt  "#000000")  ; default is #f0f0f0
         (comment fg-dim)
         ))
 
+(setq ef-night-palette-overrides
+      '(
+        (comment "#4f5e57") ; default is #cf9f7
+        ))
+
+(setq ef-bio-palette-overrides
+      '(
+        (comment "#786a59") ; default is #cf9f7
+        ))
+
+(setq ef-themes-to-toggle '(ef-bio ef-elea-light))
+
+(map! :leader
+      (:prefix ("t")
+       :desc "ef-themes-toggle" "t" #'ef-themes-toggle
+       ))
+
+;; frame keybindings
+(map! :leader
+        (:prefix ("e" . "frame")
+         :desc "clone frames" "c" #'clone-frame
+         :desc "switch frames" "<tab>" #'other-frame
+         ))
 
 
 ;; treemacs
@@ -131,7 +155,23 @@
   (setq doom-themes-treemacs-theme "doom-colors")
   )
 
+;; latex stuff
+
+
+(use-package! latex-preview-pane-mode
+  :defer t
+  :config
+  (setq shell-escape-mode "-shell-escape")
+  ;; (add-hook 'latex-mode-hook (lambda () 'TeX-clean))
+  )
+
 ;; ~~ BEGINNING of org stuff ~~
+;; org roam stuff
+(use-package! org-roam
+  :config
+  (setq org-roam-directory (file-truename "~/Local_Documents/Org-CS350"))
+  )
+
 (use-package! org-modern
   :hook (org-mode . org-modern-mode)
   :config
@@ -263,6 +303,14 @@
   (add-to-list 'lsp-clients-clangd-args "-std=c++14")
   )
 
+; lsp mode stuff
+(after! lsp-mode
+  (setq lsp-inlay-hint-enable t)
+  (set-face-attribute 'lsp-inlay-hint-face nil :slant 'italic)
+  ;; (custom-set-faces lsp-inlay-hint-face
+  ;;                   :height 0.8)
+  )
+
 ;; elcord for discord rich presesce
 ;; (require 'elcord)
 ;; (elcord-mode)
@@ -292,3 +340,22 @@ _h_ decrease width    _l_ increase width
   ;; (setq doom-modeline-time-icon nil)
   (setq doom-modeline-height 37)
   )
+
+;; obsidian stuff
+ (use-package! obsidian
+  :ensure t
+  :demand t
+  :config
+  (obsidian-specify-path "~/Local_Documents/Obsidian-Main")
+  (global-obsidian-mode t)
+  ;; :custom
+  ;; ;; This directory will be used for `obsidian-capture' if set.
+  ;; (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+  ("C-c C-o" . obsidian-follow-link-at-point)
+  ;; Jump to backlinks
+  ("C-c C-b" . obsidian-backlink-jump)
+  ;; If you prefer you can use `obsidian-insert-link'
+  ("C-c C-l" . obsidian-insert-wikilink)))
+

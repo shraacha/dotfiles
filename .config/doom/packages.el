@@ -49,11 +49,25 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
+;; org
 (package! org-modern) ;;  faster org-prettification
-
 (package! visual-fill-column) ;; org centering stuff
 
-(package! engrave-faces)
+;; obsidian
+(package! obsidian)
 
+;; themes
 (package! modus-themes)
 (package! ef-themes)
+
+;; colouring hex codes
+(package! rainbow-mode)
+
+;; font stuff for latex
+(package! engrave-faces)
+
+;; org roam
+(package! org-roam)
+
+;; ;; bitlbee
+;; (package! bitlbee)
