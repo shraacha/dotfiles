@@ -405,6 +405,11 @@
           )
         ))
 
+(setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t%-6e% s")
+                                (todo . " %i %-12:c %-6e")
+                                (tags . " %i %-12:c")
+                                (search . " %i %-12:c")))
+
 ;; ~~ END of org stuff ~~
 
 ;; spices up latex code blocks
