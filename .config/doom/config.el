@@ -42,7 +42,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "~/Local_Documents/Org/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -169,9 +169,10 @@
 ;; org roam stuff
 (use-package! org-roam
   :config
-  (setq org-roam-directory (file-truename "~/Local_Documents/Org-CS350"))
+  ;; (setq org-roam-directory (file-truename "~/Local_Documents/Org-CS350"))
   )
 
+;; org mode tweaks
 (use-package! org-modern
   :hook (org-mode . org-modern-mode)
   :config
@@ -216,63 +217,232 @@
   (setq org-preview-latex-default-process 'luamagick) ;; lowkey no idea
 )
 
+;; org agenda stuff
+;; based on (mostly stolen from) jethro's config
+
+;; using this rather than org-agenda-bulk-mark-regexp since it did not correctly match the caterogory
+;;   of item, and tried to match the text of the item
+;; stolen from https://emacs.stackexchange.com/questions/59657/how-to-bulk-mark-agenda-items-based-on-file-name
+(defun custom/org-agenda-bulk-mark-regexp-category (regexp)
+    "Mark entries whose category matches REGEXP for future agenda bulk action."
+    (interactive "sMark entries with category matching regexp: ")
+    (let ((entries-marked 0) txt-at-point)
+      (save-excursion
+        (goto-char (point-min))
+        (goto-char (next-single-property-change (point) 'org-hd-marker))
+        (while (and (re-search-forward regexp nil t)
+                    (setq category-at-point
+                          (get-text-property (match-beginning 0) 'org-category)))
+          (if (get-char-property (point) 'invisible)
+              (beginning-of-line 2)
+            (when (string-match-p regexp category-at-point)
+              (setq entries-marked (1+ entries-marked))
+              (call-interactively 'org-agenda-bulk-mark)))))
+      (unless entries-marked
+        (message "No entry matching this regexp."))))
+
+(defvar custom/org-current-effort "1:00"
+  "Current effort for agenda items.")
+
+(defun custom/my-org-agenda-set-effort (effort)
+  "Set the effort property for the current headline."
+  (interactive
+   (list (read-string (format "Effort [%s]: " custom/org-current-effort) nil nil custom/org-current-effort)))
+  (setq custom/org-current-effort effort)
+  (org-agenda-check-no-diary)
+  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                       (org-agenda-error)))
+         (buffer (marker-buffer hdmarker))
+         (pos (marker-position hdmarker))
+         (inhibit-read-only t)
+         newhead)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-fold-show-context 'agenda)
+        (funcall-interactively 'org-set-effort nil custom/org-current-effort)
+        (end-of-line 1)
+        (setq newhead (org-get-heading)))
+      (org-agenda-change-all-lines newhead hdmarker))))
+
+(defun custom/org-agenda-process-inbox-item ()
+  "Process a single item in the org-agenda."
+  (org-with-wide-buffer
+   (org-agenda-set-tags)
+   (org-agenda-priority)
+   (call-interactively 'custom/my-org-agenda-set-effort)
+   (org-agenda-refile nil nil t)
+   ))
+
+(defun custom/bulk-process-entries ()
+  (interactive)
+  (let ())
+  (if (not (null org-agenda-bulk-marked-entries))
+      (let ((entries (reverse org-agenda-bulk-marked-entries))
+            (processed 0)
+            (skipped 0))
+        (dolist (e entries)
+          (let ((pos (text-property-any (point-min) (point-max) 'org-hd-marker e)))
+            (if (not pos)
+                (progn (message "Skipping removed entry at %s" e)
+                       (cl-incf skipped))
+              (goto-char pos)
+              (let (org-loop-over-headlines-in-active-region) (funcall 'custom/org-agenda-process-inbox-item))
+              ;; `post-command-hook' is not run yet.  We make sure any
+              ;; pending log note is processed.
+              (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
+                        (memq 'org-add-log-note post-command-hook))
+                (org-add-log-note))
+              (cl-incf processed))))
+        (org-agenda-redo)
+        (unless org-agenda-persistent-marks (org-agenda-bulk-unmark-all))
+        (message "Acted on %d entries%s%s"
+                 processed
+                 (if (= skipped 0)
+                     ""
+                   (format ", skipped %d (disappeared before their turn)"
+                           skipped))
+                 (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
+
+(defun custom/org-process-inbox ()
+  "Called in org-agenda-mode, processes all inbox items."
+  (interactive)
+  (custom/org-agenda-bulk-mark-regexp-category "inbox")
+  (custom/bulk-process-entries))
+
+(defun custom/org-inbox-capture ()
+  "Capture a task in agenda mode."
+  (interactive)
+  (org-capture nil "i"))
+
+(map! :map org-agenda-mode-map
+      "i" #'org-agenda-clock-in
+      ;; "I" #'custom/clock-in-and-advance
+      "r" #'custom/org-process-inbox
+      "R" #'org-agenda-refile
+      "c" #'custom/org-inbox-capture)
+
+(require 'find-lisp)
+(setq custom/org-agenda-directory
+      (expand-file-name "OrgTodo/" org-directory))
+(setq org-agenda-files
+      (find-lisp-find-files custom/org-agenda-directory "\.org$"))
+
+(setq org-capture-templates
+      `(("i" "Inbox" entry  (file "OrgTodo/inbox.org")
+         ,(concat "* TODO %?\n"
+                  "/Entered on/ %U"))
+        ;; ("s" "Slipbox" entry  (file "braindump/org/inbox.org")
+        ;;  "* %?\n")
+        ))
+
+(setq org-enable-priority-commands t
+      org-highest-priority ?A
+      org-default-priority ?D
+      org-lowest-priority ?D)
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "|" "Cancelled(c)")))
+
+(setq org-tag-alist '(("@errand" . ?e)
+                      ("@office" . ?o)
+                      ("@school" . ?s)
+                      ("@home" . ?h)))
+
+(setq org-fast-tag-selection-single-key nil)
+(setq org-refile-use-outline-path 'file
+      org-outline-path-complete-in-steps nil)
+(setq org-refile-allow-creating-parent-nodes 'confirm)
+
 ; agenda stuff
 (use-package! org-agenda
+  :init
+  (setq org-agenda-start-with-log-mode t)
   :defer t
   :config
-  ;; copied from prot
-  ;; https://protesilaos.com/codelog/2021-12-09-emacs-org-block-agenda/
+  ;; (defun custom/is-project-p ()
+  ;;   "Any task with a todo keyword subtask"
+  ;;   (save-restriction
+  ;;     (widen)
+  ;;     (let ((has-subtask)
+  ;;           (subtree-end (save-excursion (org-end-of-subtree t)))
+  ;;           (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+  ;;       (save-excursion
+  ;;         (forward-line 1)
+  ;;         (while (and (not has-subtask)
+  ;;                     (< (point) subtree-end)
+  ;;                     (re-search-forward "^\*+ " subtree-end t))
+  ;;           (when (member (org-get-todo-state) org-todo-keywords-1)
+  ;;             (setq has-subtask t))))
+  ;;       (and is-a-task has-subtask))))
+
+  ;; (defun custom/skip-projects ()
+  ;;   "Skip trees that are projects."
+  ;;   (save-restriction
+  ;;     (widen)
+  ;;     (let ((next-headline (save-excursion (or (outline-next-heading) (point-max)))))
+  ;;       (cond
+  ;;        ((org-is-habit-p)
+  ;;         next-headline)
+  ;;        (t
+  ;;         nil)))))
+  (setq org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY(Priority) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
   (setq org-agenda-custom-commands
-        `(("A" "Daily agenda and top priority tasks"
-           ((tags-todo "*"
-                       ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
-                        (org-agenda-skip-function
-                         `(org-agenda-skip-entry-if
-                           'notregexp ,(format "\\[#%s\\]" (char-to-string org-priority-highest))))
-                        (org-agenda-block-separator nil)
-                        (org-agenda-overriding-header "Important tasks without a date\n")))
-            (agenda "" ((org-agenda-overriding-header "Overdue")
-                        (org-agenda-time-grid nil)
-                        (org-agenda-start-on-weekday nil)
-                        (org-agenda-show-all-dates nil)
-                        (org-agenda-format-date "")  ;; Skip the date
-                        (org-agenda-span 1)
-                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                        (org-agenda-entry-types '(:deadline :scheduled))
-                        (org-scheduled-past-days 999)
-                        (org-deadline-past-days 999)
-                        (org-deadline-warning-days 0)))
-            (agenda "" ((org-agenda-overriding-header "\nToday's agenda\n")
-                        (org-agenda-start-day "0d")
-                        (org-agenda-span 1)
-                        (org-deadline-warning-days 0)
-                        (org-agenda-block-separator nil)
-                        (org-scheduled-past-days 0)
-                        ;; We don't need the `org-agenda-date-today'
-                        ;; highlight because that only has a practical
-                        ;; utility in multi-day views.
-                        (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
-                        (org-agenda-format-date "%A %-e %B %Y")))
-            (agenda "" ((org-agenda-overriding-header "\nNext seven days\n")
-                        (org-agenda-start-on-weekday nil)
-                        (org-agenda-start-day "+1d")
-                        (org-agenda-span 7)
-                        (org-deadline-warning-days 0)
-                        (org-agenda-block-separator nil)
-                                        ;(org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;; skips if the TODO keyword marks a DONE state
-                        ))
-            (agenda "" ((org-agenda-overriding-header "\nUpcoming Deadlines/Schedules (+14d)\n")
-                        (org-agenda-time-grid nil)
-                        (org-agenda-start-on-weekday nil)
-                        ;; We don't want to replicate the previous section's
-                        ;; three days, so we start counting from the day after.
-                        (org-agenda-start-day "+4d")
-                        (org-agenda-span 14)
-                        (org-agenda-show-all-dates nil)
-                        (org-deadline-warning-days 0)
-                        (org-agenda-block-separator nil)
-                        (org-agenda-entry-types '(:deadline :scheduled))
-                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)))))))))
+        `(
+          (" " "today's agenda"
+           ((alltodo ""
+                     ((org-agenda-overriding-header "Inbox")
+                      (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
+            (agenda ""
+                    ((org-agenda-start-on-weekday nil)
+                     (org-agenda-start-day "0d")
+                     (org-agenda-span 'day)
+                     (org-deadline-warning-days 7)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "In Progress")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
+                   ))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)))
+                   ;; (org-agenda-skip-function #'custom/skip-projects)
+                   ))))
+          ("w" "this week's agenda"
+           ((alltodo ""
+                     ((org-agenda-overriding-header "Inbox")
+                      (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
+            (agenda ""
+                    ((org-agenda-span 'week)
+                     (org-deadline-warning-days 365)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "In Progress")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
+                   ))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)))
+                   ;; (org-agenda-skip-function #'custom/skip-projects)
+                   ))))
+          ("n" "next week's agenda"
+           ((alltodo ""
+                     ((org-agenda-overriding-header "Inbox")
+                      (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
+            (agenda ""
+                    ((org-agenda-start-day "Sat")
+                     (org-agenda-span 'week)
+                     (org-deadline-warning-days 365)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "In Progress")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
+                   ))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)))
+                   ;; (org-agenda-skip-function #'custom/skip-projects)
+                   ))))
+          )
+        ))
 
 ;; ~~ END of org stuff ~~
 
@@ -318,9 +488,9 @@
 ;; hydra for windows stuff
 (defhydra doom-window-resize-hydra (:hint nil)
   "
-             _k_ increase height
+             _k_ decrease height
 _h_ decrease width    _l_ increase width
-             _j_ decrease height
+             _j_ increase height
 "
   ("h" evil-window-decrease-width)
   ("j" evil-window-increase-height)
@@ -329,9 +499,16 @@ _h_ decrease width    _l_ increase width
 
   ("q" nil))
 
-(map!
-      (:prefix "w"
-       :desc "Hydra resize" :n "SPC" #'doom-window-resize-hydra/body))
+;; frame keybindings
+(map! :leader
+        (:prefix ("e" . "frame")
+         :desc "clone frames" "c" #'clone-frame
+         :desc "switch frames" "<tab>" #'other-frame
+         ))
+
+(map! :leader
+      (:prefix ("w")
+       :desc "Hydra resize" :n "a" #'doom-window-resize-hydra/body))
 
 (use-package! doom-modeline
   :defer t

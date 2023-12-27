@@ -71,3 +71,7 @@
 
 ;; ;; bitlbee
 ;; (package! bitlbee)
+
+
+;; clang format
+(package! clang-format)
