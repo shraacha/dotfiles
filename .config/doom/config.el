@@ -361,36 +361,10 @@
   (setq org-agenda-start-with-log-mode t)
   :defer t
   :config
-  ;; (defun custom/is-project-p ()
-  ;;   "Any task with a todo keyword subtask"
-  ;;   (save-restriction
-  ;;     (widen)
-  ;;     (let ((has-subtask)
-  ;;           (subtree-end (save-excursion (org-end-of-subtree t)))
-  ;;           (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
-  ;;       (save-excursion
-  ;;         (forward-line 1)
-  ;;         (while (and (not has-subtask)
-  ;;                     (< (point) subtree-end)
-  ;;                     (re-search-forward "^\*+ " subtree-end t))
-  ;;           (when (member (org-get-todo-state) org-todo-keywords-1)
-  ;;             (setq has-subtask t))))
-  ;;       (and is-a-task has-subtask))))
-
-  ;; (defun custom/skip-projects ()
-  ;;   "Skip trees that are projects."
-  ;;   (save-restriction
-  ;;     (widen)
-  ;;     (let ((next-headline (save-excursion (or (outline-next-heading) (point-max)))))
-  ;;       (cond
-  ;;        ((org-is-habit-p)
-  ;;         next-headline)
-  ;;        (t
-  ;;         nil)))))
   (setq org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY(Priority) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
   (setq org-agenda-custom-commands
         `(
-          (" " "today's agenda"
+          (" " "today and this week's agenda"
            ((alltodo ""
                      ((org-agenda-overriding-header "Inbox")
                       (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
@@ -399,19 +373,6 @@
                      (org-agenda-start-day "0d")
                      (org-agenda-span 'day)
                      (org-deadline-warning-days 7)))
-            (todo "NEXT"
-                  ((org-agenda-overriding-header "In Progress")
-                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
-                   ))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "Active Projects")
-                   (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)))
-                   ;; (org-agenda-skip-function #'custom/skip-projects)
-                   ))))
-          ("w" "this week's agenda"
-           ((alltodo ""
-                     ((org-agenda-overriding-header "Inbox")
-                      (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
             (agenda ""
                     ((org-agenda-span 'week)
                      (org-deadline-warning-days 365)))
