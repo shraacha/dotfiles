@@ -179,6 +179,7 @@
   (setq org-modern-todo nil)
   (setq org-modern-checkbox nil)
   (setq org-modern-todo-faces nil)
+  (setq org-modern-star '("◉" "○" "◈" "◇" "⊡" "□" "▶" "▷" "*"))
 )
 
 (defun dw/org-mode-setup ()
@@ -355,7 +356,6 @@
       org-outline-path-complete-in-steps nil)
 (setq org-refile-allow-creating-parent-nodes 'confirm)
 
-; agenda stuff
 (use-package! org-agenda
   :init
   (setq org-agenda-start-with-log-mode t)
@@ -375,7 +375,7 @@
                      (org-deadline-warning-days 7)))
             (agenda ""
                     ((org-agenda-span 'week)
-                     (org-deadline-warning-days 365)))
+                     (org-deadline-warning-days 14)))
             (todo "NEXT"
                   ((org-agenda-overriding-header "In Progress")
                    (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
@@ -405,10 +405,11 @@
           )
         ))
 
-(setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t%-6e% s")
-                                (todo . " %i %-12:c %-6e")
+(setq org-agenda-prefix-format '((agenda . " %i %-20:c%?-12t%-6e% s")
+                                (todo . " %i %-20:c %-6e")
                                 (tags . " %i %-12:c")
                                 (search . " %i %-12:c")))
+
 
 ;; ~~ END of org stuff ~~
 
