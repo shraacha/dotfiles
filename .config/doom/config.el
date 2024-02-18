@@ -455,13 +455,13 @@
 ;; hydra for windows stuff
 (defhydra doom-window-resize-hydra (:hint nil)
   "
-             _k_ decrease height
+             _k_ increase height
 _h_ decrease width    _l_ increase width
-             _j_ increase height
+             _j_ decrease height
 "
   ("h" evil-window-decrease-width)
-  ("j" evil-window-increase-height)
-  ("k" evil-window-decrease-height)
+  ("j" evil-window-decrease-height)
+  ("k" evil-window-increase-height)
   ("l" evil-window-increase-width)
 
   ("q" nil))
