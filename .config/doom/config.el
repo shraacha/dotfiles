@@ -128,23 +128,11 @@
 
 (setq ef-bio-palette-overrides
       '(
+        (bg-main "#010101") ; default is #111111
         (comment "#786a59") ; default is #cf9f7
         ))
 
 (setq ef-themes-to-toggle '(ef-bio ef-elea-light))
-
-(map! :leader
-      (:prefix ("t")
-       :desc "ef-themes-toggle" "t" #'ef-themes-toggle
-       ))
-
-;; frame keybindings
-(map! :leader
-        (:prefix ("e" . "frame")
-         :desc "clone frames" "c" #'clone-frame
-         :desc "switch frames" "<tab>" #'other-frame
-         ))
-
 
 ;; treemacs
 (use-package! treemacs
@@ -179,8 +167,8 @@
   (setq org-modern-todo nil)
   (setq org-modern-checkbox nil)
   (setq org-modern-todo-faces nil)
-  (setq org-modern-star '("◉" "○" "◈" "◇" "⊡" "□" "▶" "▷" "*"))
-)
+  (setq org-modern-star '("◉" "○" "◈" "◇" "⊡" "□" "*"))
+  )
 
 (defun dw/org-mode-setup ()
   (setq visual-fill-column-center-text t)
@@ -205,18 +193,18 @@
 
   ;;; stolen from somewhere
   (setq luamagick '(luamagick :programs ("lualatex" "convert")
-                              :description "pdf > png"
-                              :message "you need to install lualatex and imagemagick."
-                              :use-xcolor t
-                              :image-input-type "pdf"
-                              :image-output-type "png"
-                              :image-size-adjust (1.0 . 1.0)
-                              :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
-                              :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+                    :description "pdf > png"
+                    :message "you need to install lualatex and imagemagick."
+                    :use-xcolor t
+                    :image-input-type "pdf"
+                    :image-output-type "png"
+                    :image-size-adjust (1.0 . 1.0)
+                    :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+                    :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
 
   (add-to-list 'org-preview-latex-process-alist luamagick)
   (setq org-preview-latex-default-process 'luamagick) ;; lowkey no idea
-)
+  )
 
 ;; org agenda stuff
 ;; based on (mostly stolen from) jethro's config
@@ -225,22 +213,22 @@
 ;;   of item, and tried to match the text of the item
 ;; stolen from https://emacs.stackexchange.com/questions/59657/how-to-bulk-mark-agenda-items-based-on-file-name
 (defun custom/org-agenda-bulk-mark-regexp-category (regexp)
-    "Mark entries whose category matches REGEXP for future agenda bulk action."
-    (interactive "sMark entries with category matching regexp: ")
-    (let ((entries-marked 0) txt-at-point)
-      (save-excursion
-        (goto-char (point-min))
-        (goto-char (next-single-property-change (point) 'org-hd-marker))
-        (while (and (re-search-forward regexp nil t)
-                    (setq category-at-point
-                          (get-text-property (match-beginning 0) 'org-category)))
-          (if (get-char-property (point) 'invisible)
-              (beginning-of-line 2)
-            (when (string-match-p regexp category-at-point)
-              (setq entries-marked (1+ entries-marked))
-              (call-interactively 'org-agenda-bulk-mark)))))
-      (unless entries-marked
-        (message "No entry matching this regexp."))))
+  "Mark entries whose category matches REGEXP for future agenda bulk action."
+  (interactive "sMark entries with category matching regexp: ")
+  (let ((entries-marked 0) txt-at-point)
+    (save-excursion
+      (goto-char (point-min))
+      (goto-char (next-single-property-change (point) 'org-hd-marker))
+      (while (and (re-search-forward regexp nil t)
+                  (setq category-at-point
+                        (get-text-property (match-beginning 0) 'org-category)))
+        (if (get-char-property (point) 'invisible)
+            (beginning-of-line 2)
+          (when (string-match-p regexp category-at-point)
+            (setq entries-marked (1+ entries-marked))
+            (call-interactively 'org-agenda-bulk-mark)))))
+    (unless entries-marked
+      (message "No entry matching this regexp."))))
 
 (defvar custom/org-current-effort "1:00"
   "Current effort for agenda items.")
@@ -406,10 +394,26 @@
         ))
 
 (setq org-agenda-prefix-format '((agenda . " %i %-20:c%?-12t%-6e% s")
-                                (todo . " %i %-20:c %-6e")
-                                (tags . " %i %-12:c")
-                                (search . " %i %-12:c")))
+                                 (todo . " %i %-20:c %-6e")
+                                 (tags . " %i %-12:c")
+                                 (search . " %i %-12:c")))
 
+(use-package! org-journal
+  :init
+  (setq org-journal-dir "~/Local_Documents/Org/OrgJournal/")
+  :config
+  (map! :map calendar-mode-map
+        "<normal-state> d m" #'org-journal-mark-entries
+        "<normal-state> d r" #'org-journal-read-entry
+        "<normal-state> d d" #'org-journal-display-entry
+        "<normal-state> d ]" #'org-journal-next-entry
+        "<normal-state> d [" #'org-journal-previous-entry
+        "<normal-state> d n" #'org-journal-new-date-entry
+        "<normal-state> d s f" #'org-journal-search-forever
+        "<normal-state> d s F" #'org-journal-search-future
+        "<normal-state> d s w" #'org-journal-search-calendar-week
+        "<normal-state> d s m" #'org-journal-search-calendar-month
+        "<normal-state> d s y" #'org-journal-search-calendar-year))
 
 ;; ~~ END of org stuff ~~
 
@@ -433,14 +437,12 @@
 (latex-preview-pane-enable)
 
 ;; lsp stuff
-;; (setq flycheck-gcc-language-standard "c++20") ; did not work: still getting some irrellevant c++11 warnings
 (use-package! cpp-mode
   :defer t
   :config
-  (add-to-list 'lsp-clients-clangd-args "-std=c++14")
   )
 
-; lsp mode stuff
+                                        ; lsp mode stuff
 (after! lsp-mode
   (setq lsp-inlay-hint-enable t)
   (set-face-attribute 'lsp-inlay-hint-face nil :slant 'italic)
@@ -466,12 +468,18 @@ _h_ decrease width    _l_ increase width
 
   ("q" nil))
 
+;; misc keybindings
+(map! :leader
+      (:prefix ("t")
+       :desc "ef-themes-toggle" "t" #'ef-themes-toggle
+       ))
+
 ;; frame keybindings
 (map! :leader
-        (:prefix ("e" . "frame")
-         :desc "clone frames" "c" #'clone-frame
-         :desc "switch frames" "<tab>" #'other-frame
-         ))
+      (:prefix ("e" . "frame")
+       :desc "clone frames" "c" #'clone-frame
+       :desc "switch frames" "<tab>" #'other-frame
+       ))
 
 (map! :leader
       (:prefix ("w")
@@ -485,8 +493,11 @@ _h_ decrease width    _l_ increase width
   (setq doom-modeline-height 37)
   )
 
+(map! :leader
+      (:desc "find other file" "<backtab>" #'ff-find-other-file))
+
 ;; obsidian stuff
- (use-package! obsidian
+(use-package! obsidian
   :ensure t
   :demand t
   :config
@@ -496,10 +507,9 @@ _h_ decrease width    _l_ increase width
   ;; ;; This directory will be used for `obsidian-capture' if set.
   ;; (obsidian-inbox-directory "Inbox")
   :bind (:map obsidian-mode-map
-  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
-  ("C-c C-o" . obsidian-follow-link-at-point)
-  ;; Jump to backlinks
-  ("C-c C-b" . obsidian-backlink-jump)
-  ;; If you prefer you can use `obsidian-insert-link'
-  ("C-c C-l" . obsidian-insert-wikilink)))
-
+              ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+              ("C-c C-o" . obsidian-follow-link-at-point)
+              ;; Jump to backlinks
+              ("C-c C-b" . obsidian-backlink-jump)
+              ;; If you prefer you can use `obsidian-insert-link'
+              ("C-c C-l" . obsidian-insert-wikilink)))

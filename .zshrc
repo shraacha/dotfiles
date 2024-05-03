@@ -132,44 +132,21 @@ alias -s md=nvim
 alias cs="cd ~/Documents/school/cs-courses"
 source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 
-#GCC (for cs146)
-#alias gcc="gcc-11"
-
-#Gpp (for cs246)
-alias g++14="g++ -std=c++14 -Wall -g"
-
 # Making the default terminal editor nvim
 export EDITOR="nvim"
 
 # EMACS client nw
 alias ec="emacsclient -nw"
 
-
-
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-    if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/homebrew/Caskroom/miniforge/base/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Spicetify
-export PATH=$PATH:/Users/anish/.spicetify
+export PATH="/Users/anish/.spicetify:$PATH"
 
 # Doom Emacs
 export PATH="$HOME/.emacs.d/bin:$PATH"
 
-# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
+#vulkan
+export PATH="/Users/anish/VulkanSDK/1.3.275.0/macOS/bin:$PATH"
