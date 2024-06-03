@@ -144,8 +144,6 @@
   )
 
 ;; latex stuff
-
-
 (use-package! latex-preview-pane-mode
   :defer t
   :config
@@ -179,13 +177,15 @@
   (setq evil-auto-indent nil))
 
 (use-package! org
-  :hook (org-mode . dw/org-mode-setup)
+  :hook
+  (org-mode . dw/org-mode-setup)
   :config
   (setq org-ellipsis " ▾")
   (setq org-src-fontify-natively t)
   (setq org-latex-src-block-backend 'engraved)
+  (setq org-preview-latex-default-process 'dvisvgm)
   ;; makes latex preview bigger
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
   ;; lualatex preview
   (setq org-latex-pdf-process
         '("lualatex -shell-escape -interaction nonstopmode %f"
@@ -204,6 +204,23 @@
 
   (add-to-list 'org-preview-latex-process-alist luamagick)
   (setq org-preview-latex-default-process 'luamagick) ;; lowkey no idea
+  )
+
+(after! org-src
+  (setq org-highlight-latex-and-related '(native script entities))
+  (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t))))
+
+(use-package! laas
+  :hook ((LaTeX-mode org-mode) . laas-mode)
+  :config
+  ;; (setq laas-use-unicode t) ;; unicode >>
+  (aas-set-snippets 'laas-mode
+                    :cond #'texmathp ; expand only while in math
+                    ";1" "⊢"
+                    ";2" "⊥"
+                    "sum" (lambda () (interactive)
+                            (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+                    )
   )
 
 ;; org agenda stuff
@@ -312,11 +329,6 @@
       "R" #'org-agenda-refile
       "c" #'custom/org-inbox-capture)
 
-(require 'find-lisp)
-(setq custom/org-agenda-directory
-      (expand-file-name "OrgTodo/" org-directory))
-(setq org-agenda-files
-      (find-lisp-find-files custom/org-agenda-directory "\.org$"))
 
 (setq org-capture-templates
       `(("i" "Inbox" entry  (file "OrgTodo/inbox.org")
@@ -328,8 +340,14 @@
 
 (setq org-enable-priority-commands t
       org-highest-priority ?A
-      org-default-priority ?D
-      org-lowest-priority ?D)
+      org-default-priority ?E
+      org-lowest-priority ?E)
+
+(setq org-priority-faces '((?A . org-level-1)
+                           (?B . org-level-2)
+                           (?C . org-level-3)
+                           (?D . org-level-4)
+                           (?E . org-level-5)))
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "|" "Cancelled(c)")))
@@ -344,15 +362,24 @@
       org-outline-path-complete-in-steps nil)
 (setq org-refile-allow-creating-parent-nodes 'confirm)
 
+(setq week-calendar-start-day (if (= (calendar-day-of-week
+                                      (calendar-gregorian-from-absolute
+                                       (org-today))) 0) "0d" "-Sun"))
+
 (use-package! org-agenda
   :init
   (setq org-agenda-start-with-log-mode t)
+
+  (require 'find-lisp) ;; must require for find-lisp-find-files
+  (setq custom/org-agenda-directory
+        (expand-file-name "OrgTodo/" org-directory))
+  (setq org-agenda-files
+        (find-lisp-find-files custom/org-agenda-directory "\.org$"))
   :defer t
   :config
   (setq org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY(Priority) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
   (setq org-agenda-custom-commands
-        `(
-          (" " "today and this week's agenda"
+        `((" " "today and this week's agenda"
            ((alltodo ""
                      ((org-agenda-overriding-header "Inbox")
                       (org-agenda-files `(,(expand-file-name "OrgTodo/inbox.org" org-directory)))))
@@ -362,8 +389,10 @@
                      (org-agenda-span 'day)
                      (org-deadline-warning-days 7)))
             (agenda ""
-                    ((org-agenda-span 'week)
-                     (org-deadline-warning-days 14)))
+                    ((org-agenda-start-on-weekday nil)
+                     (org-agenda-start-day week-calendar-start-day) ;; (org-agenda-start-on-weekday 0) was not working, this is the workaround
+                     (org-agenda-span 'week)
+                     (org-deadline-warning-days 7)))
             (todo "NEXT"
                   ((org-agenda-overriding-header "In Progress")
                    (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)) )
@@ -389,9 +418,8 @@
                   ((org-agenda-overriding-header "Active Projects")
                    (org-agenda-files `(,(expand-file-name "OrgTodo/projects.org" org-directory)))
                    ;; (org-agenda-skip-function #'custom/skip-projects)
-                   ))))
-          )
-        ))
+                   ))))))
+  )
 
 (setq org-agenda-prefix-format '((agenda . " %i %-20:c%?-12t%-6e% s")
                                  (todo . " %i %-20:c %-6e")
@@ -433,7 +461,6 @@
   )
 
 ;; latex preview pane
-(require 'latex-preview-pane)
 (latex-preview-pane-enable)
 
 ;; lsp stuff
@@ -449,10 +476,6 @@
   ;; (custom-set-faces lsp-inlay-hint-face
   ;;                   :height 0.8)
   )
-
-;; elcord for discord rich presesce
-;; (require 'elcord)
-;; (elcord-mode)
 
 ;; hydra for windows stuff
 (defhydra doom-window-resize-hydra (:hint nil)

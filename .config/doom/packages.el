@@ -55,6 +55,10 @@
 (package! org-roam)
 (package! org-journal)
 
+(package! org-pandoc-import         ;; why ever leave org mode?
+  :recipe (:host github
+           :repo "tecosaur/org-pandoc-import"
+           :files ("*.el" "filters" "preprocessors")))
 ;; obsidian
 (package! obsidian)
 
@@ -70,3 +74,6 @@
 
 ;; clang format
 (package! clang-format)
+
+;; writing latex in org mode faster
+(package! laas)
